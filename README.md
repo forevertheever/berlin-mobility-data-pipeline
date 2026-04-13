@@ -1,27 +1,120 @@
-# berlin-mobility-data-pipeline
+# Berlin Mobility Data Pipeline
 
-## GCS to BigQuery pipeline
+A Bruin-based data pipeline for processing Berlin bike sharing data from local archive → Google Cloud Storage → BigQuery → staging transformations.
 
-This workspace includes an end-to-end pipeline to:
-- upload local archived CSV data from `archive/` to GCS
-- load CSV files from GCS into BigQuery in dataset `berlin_mobility`
+## Overview
 
-### Setup
+This pipeline demonstrates a complete data engineering workflow:
 
-1. Set Google credentials:
-   - `export GOOGLE_APPLICATION_CREDENTIALS="$(pwd)/service_account_key.json"`
-2. Install dependencies:
-   - `python -m pip install -r pipeline/assets/ingestion/requirements.txt`
-3. Configure `pipeline/pipeline.yml` (already has example settings for project/bucket/dataset).
+1. **Ingestion**: Upload local CSV files (`day.csv`, `hour.csv`) from `archive/` to Google Cloud Storage
+2. **Loading**: Load CSV data from GCS into BigQuery tables
+3. **Staging**: Transform raw data into human-readable format with mapped values
 
-### Run
+## Prerequisites
 
-From repository root:
-- `python pipeline/assets/ingestion/run_pipeline.py`
+- Python 3.8+
+- Google Cloud Platform account with BigQuery and Cloud Storage enabled
+- Service account key with appropriate permissions
+- Bruin CLI installed (`pip install bruin`)
 
-### Files
+## Setup
 
-- `pipeline/assets/ingestion/ingest_data.py`: upload local `archive/day.csv` and `archive/hour.csv` to `gs://bucket-data-engineering-2026/raw/`
-- `pipeline/assets/ingestion/load_to_bigquery.py`: load those GCS CSV files into BigQuery tables `day` and `hour`
-- `pipeline/assets/ingestion/run_pipeline.py`: orchestrator for both steps
-- `pipeline/assets/staging/stg_bike_trips.sql`: staging transformation to make data human-readable (maps codes to names)
+1. **Clone and navigate to the repository**:
+   ```bash
+   cd /path/to/berlin-mobility-data-pipeline
+   ```
+
+2. **Set up virtual environment**:
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   ```
+
+3. **Install dependencies**:
+   ```bash
+   pip install -r pipeline/assets/ingestion/requirements.txt
+   pip install bruin
+   ```
+
+4. **Configure Google Cloud credentials**:
+   ```bash
+   export GOOGLE_APPLICATION_CREDENTIALS="$(pwd)/service_account_key.json"
+   ```
+
+5. **Verify Bruin installation**:
+   ```bash
+   bruin --version
+   ```
+
+## Configuration
+
+The pipeline is configured via `pipeline/pipeline.yml`:
+
+- **Connections**: GCS and BigQuery connections with project/bucket/dataset details
+- **Assets**: Python ingestion scripts and SQL staging transformations
+- **Dependencies**: Asset execution order (ingest → load → stage)
+
+## Running the Pipeline
+
+From the repository root:
+
+```bash
+# Validate pipeline structure
+bruin validate
+
+# View pipeline lineage
+bruin lineage pipeline/assets/staging/stg_bike_trips.sql
+
+# Run the entire pipeline
+bruin run
+
+# Run specific assets
+bruin run ingest_data
+bruin run load_to_bigquery
+bruin run stg_bike_trips
+```
+
+## Pipeline Assets
+
+### Python Assets
+
+- **`ingest_data`**: Uploads `archive/day.csv` and `archive/hour.csv` to `gs://bucket-data-engineering-2026/raw/`
+- **`load_to_bigquery`**: Loads GCS CSV files into BigQuery tables `day` and `hour` in dataset `sharing_bike_mobility`
+
+### SQL Assets
+
+- **`stg_bike_trips`**: Staging transformation that:
+  - Unions day and hour tables
+  - Maps numeric codes to human-readable values (seasons, weekdays, weather, etc.)
+  - Adds descriptive columns like `season_name`, `month_name`, `weekday_name`
+- **`bike_trips_seasonal`**: Final report aggregating bike rentals by season with weather metrics
+- **`bike_trips_temporal`**: Monthly bike rental trends for 2011-2012 with weather averages
+
+## Data Schema
+
+Based on the bike sharing dataset from `archive/Readme.txt`:
+
+- **Raw tables**: `day` (daily aggregates) and `hour` (hourly aggregates)
+- **Staging table**: `stg_bike_trips` with readable mappings
+- **Key transformations**:
+  - `yr`: 0 → 2011, 1 → 2012
+  - `season`: 1 → 'Spring', 2 → 'Summer', etc.
+  - `weekday`: 0 → 'Sunday', 1 → 'Monday', etc.
+  - `weathersit`: Mapped to descriptive weather conditions
+
+## Output
+
+After successful execution:
+
+- GCS bucket contains raw CSV files in `raw/` prefix
+- BigQuery dataset `sharing_bike_mobility` contains tables:
+  - `day`: Daily bike sharing counts
+  - `hour`: Hourly bike sharing counts
+  - `stg_bike_trips`: Human-readable staging table
+
+## Troubleshooting
+
+- Ensure GCP credentials are correctly set and have BigQuery/Storage permissions
+- Check that local `archive/` files exist before running
+- Use `bruin validate` to check pipeline configuration
+- View logs with `bruin run --verbose`

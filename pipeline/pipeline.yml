@@ -10,23 +10,6 @@ default_connections:
   # duckdb: "duckdb-default"
   # snowflake: "snowflake-default"
 
-# Google Cloud Storage (GCS) Connection Configuration
-gcs_connection:
-  connection_type: "gcs"
-  project_id: "data-engineering-2026-484614"
-  bucket_name: "bucket-data-engineering-2026"
-  # Use application default credentials via GOOGLE_APPLICATION_CREDENTIALS env var
-  # key_file is omitted when using GOOGLE_APPLICATION_CREDENTIALS
-  # key_file: "path/to/service_account_key.json"
-
-bigquery_connection:
-  connection_type: "bigquery"
-  project_id: "data-engineering-2026-484614"
-  dataset: "sharing_bike_mobility"
-  location: "EU"
-  # key_file is omitted when using GOOGLE_APPLICATION_CREDENTIALS
-  # key_file: "path/to/service_account_key.json"
-
 # notifications:
 #   slack:
 #     - channel: "#data-alerts"
@@ -37,16 +20,28 @@ bigquery_connection:
 assets:
   - name: ingest_data
     type: python
-    executable: pipeline/assets/ingestion/ingest_data.py
+    executable: assets/ingestion/ingest_data.py
 
   - name: load_to_bigquery
     type: python
-    executable: pipeline/assets/ingestion/load_to_bigquery.py
+    executable: assets/ingestion/load_to_bigquery.py
     dependencies:
       - ingest_data
 
   - name: stg_bike_trips
     type: sql
-    executable: pipeline/assets/staging/stg_bike_trips.sql
+    executable: assets/staging/stg_bike_trips.sql
     dependencies:
       - load_to_bigquery
+
+  - name: bike_trips_seasonal
+    type: sql
+    executable: assets/reports/bike_trips_seasonal.sql
+    dependencies:
+      - stg_bike_trips
+
+  - name: bike_trips_temporal
+    type: sql
+    executable: assets/reports/bike_trips_temporal.sql
+    dependencies:
+      - stg_bike_trips

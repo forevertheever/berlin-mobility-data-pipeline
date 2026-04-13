@@ -2,3 +2,7 @@
 .bruin.yml
 *.json
 *.csv
+logs/runs
+logs/*.log
+__pycache__/
+*.py[cod]

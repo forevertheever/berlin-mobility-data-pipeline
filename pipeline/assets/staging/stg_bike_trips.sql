@@ -1,6 +1,14 @@
--- Staging query for bike trips data
--- Transforms raw day and hour tables into human-readable format
--- Downstream of load_to_bigquery.py in Bruin pipeline
+/* @bruin
+
+name: stg_bike_trips
+type: bq.sql
+connection: bigquery-default
+
+materialization:
+  type: table
+  strategy: create+replace
+
+@bruin */
 
 SELECT
   'day' as aggregation_level,
