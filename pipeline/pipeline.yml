@@ -1,8 +1,8 @@
 name: my-pipeline
 
-# schedule: daily
-# start_date: "2024-01-01"
-# catchup: false
+schedule: daily
+start_date: "2011-01-01"
+catchup: false
 
 default_connections:
   gcs: "gcs-default"
@@ -31,17 +31,27 @@ assets:
   - name: stg_bike_trips
     type: sql
     executable: assets/staging/stg_bike_trips.sql
+    interval: daily
     dependencies:
       - load_to_bigquery
 
   - name: bike_trips_seasonal
     type: sql
     executable: assets/reports/bike_trips_seasonal.sql
+    interval: daily
     dependencies:
       - stg_bike_trips
 
   - name: bike_trips_temporal
     type: sql
     executable: assets/reports/bike_trips_temporal.sql
+    interval: daily
+    dependencies:
+      - stg_bike_trips
+
+  - name: bike_trips_weather_impact
+    type: sql
+    executable: assets/reports/bike_trips_weather_impact.sql
+    interval: daily
     dependencies:
       - stg_bike_trips
