@@ -40,6 +40,7 @@ This pipeline demonstrates a complete data engineering workflow:
    ```bash
    export GOOGLE_APPLICATION_CREDENTIALS="$(pwd)/service_account_key.json"
    ```
+   or you can also specify the path to your credential file in the 
 
 5. **Verify Bruin installation**:
    ```bash

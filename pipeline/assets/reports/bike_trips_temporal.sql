@@ -1,6 +1,6 @@
 /* @bruin
 
-name: bike_trips_temporal
+name: sharing_bike_mobility.bike_trips_temporal
 type: bq.sql
 connection: bigquery-default
 
