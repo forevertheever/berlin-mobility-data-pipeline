@@ -4,11 +4,18 @@ A Bruin-based data pipeline for processing Berlin bike sharing data from local a
 
 ## Overview
 
-This pipeline demonstrates a complete data engineering workflow:
+This pipeline demonstrates a complete **batch-processing data engineering workflow**:
 
 1. **Ingestion**: Upload local CSV files (`day.csv`, `hour.csv`) from `archive/` to Google Cloud Storage
 2. **Loading**: Load CSV data from GCS into BigQuery tables
 3. **Staging**: Transform raw data into human-readable format with mapped values
+4. **Reporting**: Generate analytical reports on seasonal and temporal trends
+
+**Batch Processing Features**:
+- Daily scheduled execution with incremental SQL transformations
+- Date-range filtering for processing specific time windows
+- Full refresh capability for initial loads or reprocessing
+- Dependency-based execution ensuring data consistency
 
 ## Prerequisites
 
@@ -57,7 +64,7 @@ The pipeline is configured via `pipeline/pipeline.yml`:
 
 ## Running the Pipeline
 
-From the repository root:
+The pipeline is configured for **daily batch processing** with incremental SQL transformations. From the repository root:
 
 ```bash
 # Validate pipeline structure
@@ -66,13 +73,19 @@ bruin validate
 # View pipeline lineage
 bruin lineage pipeline/assets/staging/stg_bike_trips.sql
 
-# Run the entire pipeline
+# Run full pipeline refresh (initial load or complete reprocessing)
+bruin run --full-refresh
+
+# Run incremental batch for current date (daily scheduled execution)
 bruin run
 
-# Run specific assets
-bruin run ingest_data
-bruin run load_to_bigquery
-bruin run stg_bike_trips
+# Run batch for specific date range
+bruin run --start-date 2011-01-01 --end-date 2011-01-02
+
+# Run specific assets in batch mode
+bruin run --full-refresh ingest_data
+bruin run --full-refresh load_to_bigquery
+bruin run stg_bike_trips  # Incremental for current batch
 ```
 
 ## Pipeline Assets
@@ -84,12 +97,13 @@ bruin run stg_bike_trips
 
 ### SQL Assets
 
-- **`stg_bike_trips`**: Staging transformation that:
-  - Unions day and hour tables
+- **`stg_bike_trips`**: Incremental staging transformation that:
+  - Unions day and hour tables for the current batch date range
   - Maps numeric codes to human-readable values (seasons, weekdays, weather, etc.)
   - Adds descriptive columns like `season_name`, `month_name`, `weekday_name`
-- **`bike_trips_seasonal`**: Final report aggregating bike rentals by season with weather metrics
-- **`bike_trips_temporal`**: Monthly bike rental trends for 2011-2012 with weather averages
+- **`bike_trips_seasonal`**: Incremental report aggregating bike rentals by season with weather metrics
+- **`bike_trips_temporal`**: Incremental monthly bike rental trends for 2011-2012 with weather averages
+- **`bike_trips_weather_impact`**: Incremental analysis of weather impact on rental patterns
 
 ## Data Schema
 
