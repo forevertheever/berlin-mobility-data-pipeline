@@ -4,6 +4,11 @@ schedule: daily
 start_date: "2011-01-01"
 catchup: false
 
+# Looker Studio Dashboard
+# URL: https://lookerstudio.google.com/reporting/07dca53f-9446-40e1-acc3-fdaeaf289ede
+# Access: Editor (for peer review and collaboration)
+# Connected tables: bike_trips_seasonal, bike_trips_temporal, bike_trips_weather_impact
+
 default_connections:
   gcs: "gcs-default"
   bigquery: "bigquery-default"

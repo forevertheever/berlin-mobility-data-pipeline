@@ -133,3 +133,22 @@ After successful execution:
 - Check that local `archive/` files exist before running
 - Use `bruin validate` to check pipeline configuration
 - View logs with `bruin run --verbose`
+
+## Reports & Visualizations
+
+### Looker Studio Dashboard
+
+**Link**: [Berlin Mobility Data Pipeline Report](https://lookerstudio.google.com/reporting/07dca53f-9446-40e1-acc3-fdaeaf289ede)
+
+**Access**: Viewer mode for peer review
+
+**Visualizations**:
+- Bike trips by season (2011-2012)
+- Bike demand trends over time (2011-2012)
+- Weather impact on trip volumes
+
+The dashboard connects directly to the BigQuery tables powering the pipeline, providing real-time visibility into:
+- Seasonal rental patterns
+- Temporal demand trends (monthly)
+- Weather conditions' impact on bike sharing usage
+
