@@ -108,10 +108,35 @@ environments:
 
 Then set the environment variable before running:
 ```bash
+# Google Credential 
 export GOOGLE_APPLICATION_CREDENTIALS="/path/to/your-service-account.json"
+# GCP Project Configuration
+export PROJECT_ID="your-project-id"
+export DATASET_ID="your-dataset-name"
+export BUCKET_NAME="your-gcs-bucket-name"
+export RAW_GCS_PREFIX="raw/"  # GCS prefix for raw data files (e.g., "raw/", "raw/bike-sharing/")
 ```
 
-From the repository root:
+### Adapting Variables in SQL Files
+
+Update the following locations in all SQL files under /reports and /staging:
+
+1. bruin header part.
+
+2. source path after **FROM** clause.
+
+Alternatively, you can update the default values in `pipeline/pipeline.yml` under the `variables` section and refer to them accordingly in sql files:
+```yaml
+variables:
+  project_id:
+    type: string
+    default: "your-project-id"  # Update this
+  dataset_id:
+    type: string
+    default: "your-dataset-name"  # Update this
+```
+
+Assuming you are now in the /pipeline folder:
 
 ```bash
 # Validate pipeline structure
