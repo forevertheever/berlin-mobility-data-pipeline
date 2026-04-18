@@ -136,9 +136,15 @@ After successful execution:
 
 ## Reports & Visualizations
 
+For additional analytical detail and narrative findings, see `REPORTS.md`.
+
 ### Looker Studio Dashboard
 
-**Link**: [Berlin Mobility Data Pipeline Report](https://lookerstudio.google.com/reporting/07dca53f-9446-40e1-acc3-fdaeaf289ede)
+**Link**: [Berlin Mobility Data Pipeline Report](https://datastudio.google.com/reporting/07dca53f-9446-40e1-acc3-fdaeaf289ede)
+
+> [Bike Sharing Reports PDF](bike_sharing_reports.pdf)
+
+note that the axis index for time is following the local language in the Looker Studio, you can click the link and view it in your local language. 
 
 **Access**: Viewer mode for peer review
 

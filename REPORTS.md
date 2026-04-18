@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document describes the visualizations and insights available in the Looker Studio dashboard for the Berlin bike sharing data pipeline.
+This document describes the visualizations and insights available in the Looker Studio dashboard for the bike sharing data pipeline.
 
 ## Dashboard Link
 
