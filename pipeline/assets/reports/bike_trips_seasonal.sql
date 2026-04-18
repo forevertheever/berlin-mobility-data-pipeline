@@ -18,6 +18,6 @@ SELECT
   ROUND(AVG(temp), 2) AS avg_temperature,
   ROUND(AVG(hum), 2) AS avg_humidity,
   ROUND(AVG(windspeed), 2) AS avg_windspeed
-FROM `{{ project_id }}.{{ dataset_id }}.stg_bike_trips`
+FROM `data-engineering-2026-484614.sharing_bike_mobility.stg_bike_trips`
 GROUP BY season_name
 ORDER BY total_rentals DESC

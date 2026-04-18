@@ -70,7 +70,7 @@ SELECT
   casual,
   registered,
   cnt
-FROM `{{ project_id }}.{{ dataset_id }}.day`
+FROM `data-engineering-2026-484614.sharing_bike_mobility.day`
 WHERE dteday >= '{{ start_date }}' AND dteday < '{{ end_date }}'
 
 UNION ALL
@@ -135,5 +135,5 @@ SELECT
   casual,
   registered,
   cnt
-FROM `{{ project_id }}.{{ dataset_id }}.hour`
+FROM `data-engineering-2026-484614.sharing_bike_mobility.hour`
 WHERE dteday >= '{{ start_date }}' AND dteday < '{{ end_date }}'
