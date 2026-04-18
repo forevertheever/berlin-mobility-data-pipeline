@@ -60,3 +60,11 @@ assets:
     interval: daily
     dependencies:
       - stg_bike_trips
+
+variables:
+  project_id:
+    type: string
+    default: "data-engineering-2026-484614"
+  dataset_id:
+    type: string
+    default: "sharing_bike_mobility"

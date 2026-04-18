@@ -7,12 +7,13 @@ image: python:3.11
 
 from pathlib import Path
 from google.cloud import bigquery
+import os
 
-# Keep these aligned with pipeline/pipeline.yml
-PROJECT_ID = "data-engineering-2026-484614"
-DATASET_ID = "sharing_bike_mobility"
-BUCKET_NAME = "bucket-date-engineering-2026"
-RAW_GCS_PREFIX = "raw"
+# Get variables from Bruin environment
+PROJECT_ID = os.getenv("BRUIN_VAR_PROJECT_ID", "data-engineering-2026-484614")
+DATASET_ID = os.getenv("BRUIN_VAR_DATASET_ID", "sharing_bike_mobility")
+BUCKET_NAME = os.getenv("BRUIN_VAR_BUCKET_NAME", "bucket-date-engineering-2026")
+RAW_GCS_PREFIX = os.getenv("BRUIN_VAR_RAW_GCS_PREFIX", "raw")
 
 ARCHIVE_FILES = ["day.csv", "hour.csv"]
 

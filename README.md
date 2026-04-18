@@ -21,38 +21,44 @@ This pipeline demonstrates a complete **batch-processing data engineering workfl
 
 - Python 3.8+
 - Google Cloud Platform account with BigQuery and Cloud Storage enabled
-- Service account key with appropriate permissions
-- Bruin CLI installed (`pip install bruin`)
+- Service account key with the following IAM roles:
+  - `roles/storage.objectCreator` - Create objects in GCS
+  - `roles/storage.objectViewer` - Read objects from GCS
+  - `roles/bigquery.dataEditor` - Create/edit BigQuery datasets and tables
+  - `roles/bigquery.jobUser` - Run BigQuery jobs (queries, loads, exports)
+- uv (pip install uv)
 
 ## Setup
 
 1. **Clone and navigate to the repository**:
    ```bash
-   cd /path/to/berlin-mobility-data-pipeline
+   cd /path/to/bike-sharing-mobility-data-pipeline
    ```
 
-2. **Set up virtual environment**:
+2. **Set up virtual environment with uv**:
    ```bash
-   python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   uv venv
+   source .venv/bin/activate  # On Windows: .venv\Scripts\activate
    ```
 
 3. **Install dependencies**:
    ```bash
-   pip install -r pipeline/assets/ingestion/requirements.txt
-   pip install bruin
+   uv pip install -r pipeline/assets/requirements.txt
+   uv pip install bruin
    ```
 
-4. **Configure Google Cloud credentials**:
-   ```bash
-   export GOOGLE_APPLICATION_CREDENTIALS="$(pwd)/service_account_key.json"
-   ```
-   or you can also specify the path to your credential file in the 
-
-5. **Verify Bruin installation**:
+4. **Verify Bruin installation**:
    ```bash
    bruin --version
    ```
+
+5. **Download Google Cloud credentials**:
+   In the service accounts list, click on the service account you created, go to the **Keys** tab
+   10. Click **Add Key** → **Create new key**
+   11. Choose **JSON** format
+   12. Download the JSON file and save it securely (e.g., in your project root)
+   
+   **Make sure that this credential file is not exposed!** Add it to `.gitignore`:
 
 ## Configuration
 
@@ -60,11 +66,52 @@ The pipeline is configured via `pipeline/pipeline.yml`:
 
 - **Connections**: GCS and BigQuery connections with project/bucket/dataset details
 - **Assets**: Python ingestion scripts and SQL staging transformations
-- **Dependencies**: Asset execution order (ingest → load → stage)
+- **Dependencies**: Asset execution order (ingest → load → stage → transformation → report)
 
 ## Running the Pipeline
 
-The pipeline is configured for **daily batch processing** with incremental SQL transformations. From the repository root:
+The pipeline is configured for **daily batch processing** with incremental SQL transformations. 
+
+Create a `.bruin.yml` file under the root folder with your GCP credentials. You can use either an absolute path or the environment variable:
+
+**Option 1: Using absolute path (recommended)**
+```yaml
+default_environment: default
+environments:
+  default:
+    connections:
+      google_cloud_platform:
+        - name: bigquery-default
+          project_id: your_project_id
+          location: your_location
+          service_account_file: /absolute/path/to/your-service-account.json
+      gcs:
+        - name: gcs-default
+          service_account_file: /absolute/path/to/your-service-account.json
+```
+
+**Option 2: Using environment variable**
+```yaml
+default_environment: default
+environments:
+  default:
+    connections:
+      google_cloud_platform:
+        - name: bigquery-default
+          project_id: your_project_id
+          location: your_location
+          service_account_file: $GOOGLE_APPLICATION_CREDENTIALS
+      gcs:
+        - name: gcs-default
+          service_account_file: $GOOGLE_APPLICATION_CREDENTIALS
+```
+
+Then set the environment variable before running:
+```bash
+export GOOGLE_APPLICATION_CREDENTIALS="/path/to/your-service-account.json"
+```
+
+From the repository root:
 
 ```bash
 # Validate pipeline structure

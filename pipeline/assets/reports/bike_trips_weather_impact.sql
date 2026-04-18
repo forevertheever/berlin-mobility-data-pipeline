@@ -26,7 +26,7 @@ SELECT
   MIN(cnt) as min_rentals,
   MAX(cnt) as max_rentals,
   SUM(cnt) as total_rentals
-FROM `data-engineering-2026-484614.sharing_bike_mobility.stg_bike_trips`
+FROM `{{ project_id }}.{{ dataset_id }}.stg_bike_trips`
 WHERE weather_situation IS NOT NULL
 GROUP BY weather_situation
 ORDER BY total_rentals DESC
