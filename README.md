@@ -1,12 +1,12 @@
 # Berlin Mobility Data Pipeline
 
-A Bruin-based data pipeline for processing Berlin bike sharing data from local archive → Google Cloud Storage → BigQuery → staging transformations.
+A Bruin-based data pipeline for processing Berlin bike sharing data from local CSV archive → Google Cloud Storage → BigQuery → staging transformations.
 
 ## Overview
 
 This pipeline demonstrates a complete **batch-processing data engineering workflow**:
 
-1. **Ingestion**: Upload local CSV files (`day.csv`, `hour.csv`) from `archive/` to Google Cloud Storage
+1. **Ingestion**: Upload local CSV files (`day.csv`, `hour.csv`) from the `archive/` folder to Google Cloud Storage
 2. **Loading**: Load CSV data from GCS into BigQuery tables
 3. **Staging**: Transform raw data into human-readable format with mapped values
 4. **Reporting**: Generate analytical reports on seasonal and temporal trends
@@ -52,7 +52,11 @@ This pipeline demonstrates a complete **batch-processing data engineering workfl
    bruin --version
    ```
 
-5. **Download Google Cloud credentials**:
+5. **Ensure local CSV files exist**:
+   - Place `day.csv` and `hour.csv` in the repository `archive/` folder
+   - Confirm the files are present before running the pipeline
+
+6. **Download Google Cloud credentials**:
    In the service accounts list, click on the service account you created, go to the **Keys** tab
    10. Click **Add Key** → **Create new key**
    11. Choose **JSON** format
@@ -108,7 +112,7 @@ environments:
 
 Then set the environment variable before running:
 ```bash
-# Google Credential 
+# Google Credential, if you choose the Option 2 in your .bruin.yml file
 export GOOGLE_APPLICATION_CREDENTIALS="/path/to/your-service-account.json"
 # GCP Project Configuration
 export PROJECT_ID="your-project-id"

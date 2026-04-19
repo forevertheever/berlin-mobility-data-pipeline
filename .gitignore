@@ -1,7 +1,6 @@
 uv.lock
 .bruin.yml
 *.json
-*.csv
 logs/runs
 logs/*.log
 __pycache__/
