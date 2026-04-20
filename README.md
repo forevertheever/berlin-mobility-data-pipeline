@@ -57,12 +57,12 @@ This pipeline demonstrates a complete **batch-processing data engineering workfl
    - Confirm the files are present before running the pipeline
 
 6. **Download Google Cloud credentials**:
-   In the service accounts list, click on the service account you created, go to the **Keys** tab
-   10. Click **Add Key** → **Create new key**
-   11. Choose **JSON** format
-   12. Download the JSON file and save it securely (e.g., in your project root)
+   - In the service accounts list, click on the service account you created, go to the **Keys** tab
+   - Click **Add Key** → **Create new key**
+   - Choose **JSON** format
+   - Download the JSON file and save it securely (e.g., in your project root)
    
-   **Make sure that this credential file is not exposed!** Add it to `.gitignore`:
+   **Make sure that this credential file is not exposed!** Add it to `.gitignore`
 
 ## Configuration
 
@@ -76,25 +76,8 @@ The pipeline is configured via `pipeline/pipeline.yml`:
 
 The pipeline is configured for **daily batch processing** with incremental SQL transformations. 
 
-Create a `.bruin.yml` file under the root folder with your GCP credentials. You can use either an absolute path or the environment variable:
+Create a `.bruin.yml` file under the root folder with your GCP credentials. 
 
-**Option 1: Using absolute path (recommended)**
-```yaml
-default_environment: default
-environments:
-  default:
-    connections:
-      google_cloud_platform:
-        - name: bigquery-default
-          project_id: your_project_id
-          location: your_location
-          service_account_file: /absolute/path/to/your-service-account.json
-      gcs:
-        - name: gcs-default
-          service_account_file: /absolute/path/to/your-service-account.json
-```
-
-**Option 2: Using environment variable**
 ```yaml
 default_environment: default
 environments:
@@ -121,24 +104,7 @@ export BUCKET_NAME="your-gcs-bucket-name"
 export RAW_GCS_PREFIX="raw/"  # GCS prefix for raw data files (e.g., "raw/", "raw/bike-sharing/")
 ```
 
-### Adapting Variables in SQL Files
-
-Update the following locations in all SQL files under /reports and /staging:
-
-1. bruin header part.
-
-2. source path after **FROM** clause.
-
-Alternatively, you can update the default values in `pipeline/pipeline.yml` under the `variables` section and refer to them accordingly in sql files:
-```yaml
-variables:
-  project_id:
-    type: string
-    default: "your-project-id"  # Update this
-  dataset_id:
-    type: string
-    default: "your-dataset-name"  # Update this
-```
+Adapting the project_id and dataset_name in **all sql file**s according to your own project.
 
 Assuming you are now in the /pipeline folder:
 
@@ -146,7 +112,7 @@ Assuming you are now in the /pipeline folder:
 # Validate pipeline structure
 bruin validate
 
-# View pipeline lineage
+# View pipeline lineage, e.g.,
 bruin lineage pipeline/assets/staging/stg_bike_trips.sql
 
 # Run batch for full range data from 2011 to 2012
@@ -162,8 +128,8 @@ Note that the report is genearted by using all the data in the two years 2011 an
 
 ### Python Assets
 
-- **`ingest_data`**: Uploads `archive/day.csv` and `archive/hour.csv` to `gs://bucket-date-engineering-2026/raw/`
-- **`load_to_bigquery`**: Loads GCS CSV files into BigQuery tables `day` and `hour` in dataset `sharing_bike_mobility`
+- **`ingest_data`**: Uploads `archive/day.csv` and `archive/hour.csv` to `gs://{your_bucket}/raw/`
+- **`load_to_bigquery`**: Loads GCS CSV files into BigQuery tables `day` and `hour` in dataset `{your dataset}`
 
 ### SQL Assets
 
@@ -186,16 +152,6 @@ Based on the bike sharing dataset from `archive/Readme.txt`:
   - `season`: 1 → 'Spring', 2 → 'Summer', etc.
   - `weekday`: 0 → 'Sunday', 1 → 'Monday', etc.
   - `weathersit`: Mapped to descriptive weather conditions
-
-## Output
-
-After successful execution:
-
-- GCS bucket contains raw CSV files in `raw/` prefix
-- BigQuery dataset `sharing_bike_mobility` contains tables:
-  - `day`: Daily bike sharing counts
-  - `hour`: Hourly bike sharing counts
-  - `stg_bike_trips`: Human-readable staging table
 
 ## Troubleshooting
 
