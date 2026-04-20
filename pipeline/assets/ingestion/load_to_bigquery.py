@@ -7,6 +7,7 @@ image: python:3.11
 
 from pathlib import Path
 from google.cloud import bigquery
+from google.api_core.exceptions import NotFound
 import os
 
 # Get variables from Bruin environment
@@ -67,12 +68,13 @@ def ensure_dataset(client: bigquery.Client, dataset_id: str):
     dataset_ref = client.dataset(dataset_id)
     try:
         client.get_dataset(dataset_ref)
-        print(f"Dataset exists: {dataset_ref}")
-    except Exception:
+        print(f"✅ Dataset exists: {dataset_ref}")
+    except NotFound:
+        print(f"📦 Dataset not found. Creating dataset: {dataset_id}")
         dataset = bigquery.Dataset(dataset_ref)
         dataset.location = "EU"
         client.create_dataset(dataset)
-        print(f"Created dataset: {dataset_ref}")
+        print(f"✅ Created dataset: {dataset_ref}")
 
 
 def load_csv_to_bq(client: bigquery.Client, table_id: str, gcs_uri: str, schema: list[bigquery.SchemaField]):
@@ -87,12 +89,20 @@ def load_csv_to_bq(client: bigquery.Client, table_id: str, gcs_uri: str, schema:
         allow_jagged_rows=True,
     )
 
-    print(f"Starting load: {gcs_uri} -> {table_id}")
+    print(f"📤 Starting load: {gcs_uri} -> {table_id}")
     load_job = client.load_table_from_uri(gcs_uri, table_id, job_config=job_config)
-    load_job.result()
+    load_job.result()  # Wait for the job to complete
+    print(f"✅ Load job completed: {load_job.job_id}")
 
+    # Verify table exists and is queryable
     destination = client.get_table(table_id)
-    print(f"Loaded {destination.num_rows} rows into {table_id}")
+    print(f"✅ Verified table {table_id} exists with {destination.num_rows} rows")
+    
+    # Run a simple query to ensure table is queryable
+    query = f"SELECT COUNT(*) as cnt FROM `{table_id}` LIMIT 1"
+    result = client.query(query).result()
+    for row in result:
+        print(f"✅ Table is queryable. Row count: {row.cnt}")
 
 
 def materialize():

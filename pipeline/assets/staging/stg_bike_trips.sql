@@ -71,7 +71,6 @@ SELECT
   registered,
   cnt
 FROM `data-engineering-2026-484614.sharing_bike_mobility.day`
-WHERE dteday >= '{{ start_date }}' AND dteday < '{{ end_date }}'
 
 UNION ALL
 
@@ -136,4 +135,3 @@ SELECT
   registered,
   cnt
 FROM `data-engineering-2026-484614.sharing_bike_mobility.hour`
-WHERE dteday >= '{{ start_date }}' AND dteday < '{{ end_date }}'

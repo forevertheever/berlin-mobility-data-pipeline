@@ -149,26 +149,20 @@ bruin validate
 # View pipeline lineage
 bruin lineage pipeline/assets/staging/stg_bike_trips.sql
 
-# Run full pipeline refresh (initial load or complete reprocessing)
-bruin run --full-refresh
-
-# Run incremental batch for current date (daily scheduled execution)
+# Run batch for full range data from 2011 to 2012
 bruin run
 
-# Run batch for specific date range
+# You could also run batch for specific date range
 bruin run --start-date 2011-01-01 --end-date 2011-01-02
 
-# Run specific assets in batch mode
-bruin run --full-refresh ingest_data
-bruin run --full-refresh load_to_bigquery
-bruin run stg_bike_trips  # Incremental for current batch
 ```
+Note that the report is genearted by using all the data in the two years 2011 and 2012.
 
 ## Pipeline Assets
 
 ### Python Assets
 
-- **`ingest_data`**: Uploads `archive/day.csv` and `archive/hour.csv` to `gs://bucket-data-engineering-2026/raw/`
+- **`ingest_data`**: Uploads `archive/day.csv` and `archive/hour.csv` to `gs://bucket-date-engineering-2026/raw/`
 - **`load_to_bigquery`**: Loads GCS CSV files into BigQuery tables `day` and `hour` in dataset `sharing_bike_mobility`
 
 ### SQL Assets
@@ -206,23 +200,16 @@ After successful execution:
 ## Troubleshooting
 
 - Ensure GCP credentials are correctly set and have BigQuery/Storage permissions
+- Ensure that all environmental variables are set correctly, the project_id and dataset name are the same as your specificaiton
 - Check that local `archive/` files exist before running
 - Use `bruin validate` to check pipeline configuration
 - View logs with `bruin run --verbose`
 
 ## Reports & Visualizations
 
-For additional analytical detail and narrative findings, see `REPORTS.md`.
-
-### Looker Studio Dashboard
-
-**Link**: [Berlin Mobility Data Pipeline Report](https://datastudio.google.com/reporting/07dca53f-9446-40e1-acc3-fdaeaf289ede)
-
 > [Bike Sharing Reports PDF](bike_sharing_reports.pdf)
 
-note that the axis index for time is following the local language in the Looker Studio, you can click the link and view it in your local language. 
-
-**Access**: Viewer mode for peer review
+note that the axis index for time is following the local language in the Looker Studio, therefore it's shown in my system language in the report.
 
 **Visualizations**:
 - Bike trips by season (2011-2012)

@@ -20,6 +20,5 @@ SELECT
   ROUND(AVG(temp), 2) AS avg_temperature,
   ROUND(AVG(hum), 2) AS avg_humidity
 FROM `data-engineering-2026-484614.sharing_bike_mobility.stg_bike_trips`
-WHERE year IN (2011, 2012)
 GROUP BY year, mnth, month_name
 ORDER BY year, mnth
