@@ -1,4 +1,4 @@
-# Berlin Mobility Data Pipeline
+# Bike Sharing Mobility Data Pipeline
 
 A Bruin-based data pipeline for processing Berlin bike sharing data from local CSV archive → Google Cloud Storage → BigQuery → staging transformations.
 
