@@ -10,7 +10,7 @@ from pathlib import Path
 import os
 
 # Get variables from Bruin environment
-BUCKET_NAME = os.getenv("BRUIN_VAR_BUCKET_NAME", "bucket-date-engineering-2026")
+BUCKET_NAME = os.getenv("BUCKET_NAME", "bucket-date-engineering-2026")
 
 # File names in project archive folder
 ARCHIVE_FILES = ["day.csv", "hour.csv"]
